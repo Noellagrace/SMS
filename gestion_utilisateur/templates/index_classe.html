@@ -1,0 +1,37 @@
+{% extends 'link.html' %}
+{% load static %}
+{% block content %}
+
+
+
+
+    <h1>Hello, world!</h1>
+    <center><a href="/create_classe" class="btn btn-primary"> Add new record</a></center>
+    <table class="table mt-3">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Code</th>
+            <th scope="col">Libelle</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for value in classes %}
+          <tr>
+            <th scope="row">{{value.id}}</th>
+            <td>{{value.code}}</td>
+            <td>{{value.libelle}}</td>
+            <td>
+                <a class="btn btn-success btn-sm" href="#">Edit <i class="bi bi-pencil-fill"></i></a>
+                <a class="btn btn-danger btn-sm" onclick="return confirm('do you really want to delete this items?')" href="#"> Delete <i class="bi bi-trash-fill"></i></a>
+
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td> No record found </td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'link.html' %}
+{% load static %}
+{% block content %}
+
+
+
+    <h1>Listes des eleves</h1>
+    <a href="/create_Eleve" class="btn btn-primary"> Ajouter un vouvel eleve</a>
+    <table class="table mt-3">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Matricule</th>
+            <th scope="col">Nom</th>
+            <th scope="col">Prenom</th>
+            <th scope="col">date_naiss</th>
+            <th scope="col">Adresse</th>
+            <th scope="col">Classe</th>
+            <th scope="col">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for value in eleves %}
+          <tr>
+            <th scope="row">{{value.id}}</th>
+            <td>{{value.matricule}}</td>
+            <td>{{value.nom}}</td>
+            <td>{{value.prenom}}</td>
+            <td>{{value.date_naiss}}</td>
+            <td>{{value.adresse}}</td>
+            <td>{{value.classe}}</td>
+            <td>
+                <a class="btn btn-success btn-sm" href="#">Edit <i class="bi bi-pencil-fill"></i></a>
+                <a class="btn btn-danger btn-sm" onclick="return confirm('do you really want to delete this items?')" href="#"> Delete <i class="bi bi-trash-fill"></i></a>
+
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td> No record found </td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      
+
+      {% endblock %}

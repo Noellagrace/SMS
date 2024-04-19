@@ -1,0 +1,37 @@
+{% extends 'link.html' %}
+{% load static %}
+{% block content %}
+
+
+
+    <h1>Les annees academique</h1>
+    <center><a href="/create_anneescolaire" class="btn btn-primary"> Add new record</a></center>
+    <table class="table mt-3">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Date de debut</th>
+            <th scope="col">Date de fin</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for value in anneescolaires %}
+          <tr>
+            <th scope="row">{{value.id}}</th>
+            <td>{{value.date_debut}}</td>
+            <td>{{value.date_fin}}</td>
+            <td>{{value.anneescolaire}}</td>
+            <td>
+                <a class="btn btn-success btn-sm" href="#">Edit <i class="bi bi-pencil-fill"></i> </a>
+                <a class="btn btn-danger btn-sm" onclick="return confirm('do you really want to delete this items?')" href="#"> Delete <i class="bi bi-trash-fill"></i> </a>
+
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td> No record found </td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      
+{% endblock %}
