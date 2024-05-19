@@ -4,10 +4,17 @@
 
 
 
-    <h1>Hello, world!</h1>
+    <h1>Liste des Enseignants</h1>
     <center><a href="/create_Enseignant" class="btn btn-primary"> Ajouter un enseignant</a></center>
     <table class="table mt-3">
         <thead>
+          <div class="search-bar">
+            <form  class="search-form d-flex align-items-center" method="POST" action="/search_enseignant">
+              {% csrf_token %}
+              <input type="text" name="query" placeholder="Search" title="Enter search keyword">
+              <button type="submit" title="Search"><i class="bi bi-search"></i></button>
+            </form>
+          </div><!-- End Search Bar -->
           <tr>
             <th scope="col">#</th>
             <th scope="col">Matricule</th>
@@ -30,9 +37,10 @@
             <td>{{value.telephone}}</td>
             <td>{{value.adresse}}</td>
             <td>
-                <a class="btn btn-success btn-sm" href="#">Edit <i class="bi bi-pencil-fill"></i></a>
-                <a class="btn btn-danger btn-sm" onclick="return confirm('do you really want to delete this items?')" href="#"> Delete <i class="bi bi-trash-fill"></i></a>
-
+              <button class="openModalButton btn btn-success btn-sm" data-id="{{ value.id }}"><i class="bi bi-pencil-fill"></i></button>        
+              <!--<a class="openModal btn btn-danger btn-sm" onclick="return confirm('do you really want to delete this items?')" href="delete_annee/"><i class="bi bi-trash-fill"></i></a> -->
+              <button class="openModal btn btn-danger btn-sm" data-id="{{ value.id }}"><i class="bi bi-trash-fill"></i></button>  
+           
             </td>
           </tr>
         {% empty %}
@@ -40,5 +48,183 @@
         {% endfor %}
         </tbody>
       </table>
+      <div class="modal fade" id="editEnseignantModal" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Modifier</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form method="POST" class="post_form" action="" id="editEnseignantForm">  
+                {% csrf_token %}
+                              <h3>Modifier les infos d'un enseignant</h3> <br/> 
+               
+                <div class="mb-3">
+                    <label for="matricule" class="form-label"> Matricule </label>
+                    <input type="text" name="matricule" class="form-control">
+                  
+                </div>
+                <div class="mb-3">
+                    <label for="nom" class="form-label"> Nom </label>
+                    <input type="text" name="nom" class="form-control">
+                  
+                </div>
+                <div class="mb-3">
+                  <label for="prenom" class="form-label"> Prenom </label>
+                  <input type="text" name="prenom" class="form-control">
+                
+              </div>
+              <div class="mb-3">
+                <label for="email" class="form-label"> Email </label>
+                <input type="email" name="email" class="form-control">
+              
+              </div>
+              <div class="mb-3">
+                <label for="telephone" class="form-label"> Telephone </label>
+                <input type="text" name="telephone" class="form-control">
+              
+              </div>
+              <div class="mb-3">
+                <label for="adresse" class="form-label"> Adresse </label>
+                <input type="text" name="adresse" class="form-control">
+              
+              </div>
+              
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                  <button type="submit" class="btn btn-primary">Modifier</button>
+                </div>
+            </form>
+                    
+            </div>
+         
+          </div>
+        </div>
+      </div>
+          <!-- Small Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <form action="" method="post" style="display: inline;">
+        {% csrf_token %}
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold">Confirmez cette action!</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        ETES VOUS SUR DE VOULOIR SUPPRIMER CET ENSEIGNANT?  
+   
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 1 1 .708.708L8.707 8l2.647 2.646a.5.5 0 1 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 1 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+          </svg>
+          fermer
+        </button>
+        <button type="submit" class="btn btn-success" data-bs-dismiss="modal">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check" viewBox="0 0 16 16">
+            <path d="M13.354 4.646a.5.5 0 0 0-.708 0L6 11.293 3.354 8.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l7-7a.5.5 0 0 0 0-.708z"/>
+          </svg>
+          supprimer
+        </button>
+      </div>
+             
+    </form>
+    </div>
+  </div>
+</div><!-- End Small Modal-->
+    
+
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+      <script>
+        $(document).ready(function(){
+          $('.openModalButton').click(function(){
+            var enseignantId = $(this).data('id'); // Récupère l'ID du poste à partir de l'attribut data-id du bouton cliqué
+            console.log('Identifiant de l/enseignant :', enseignantId);
+            
+            $('#editEnseignantModal').modal('show');
+
+            // Fetch les données du poste et les affiche dans le formulaire du modal
+            fetch(`/update_enseignant/${enseignantId}`)
+              .then(response => response.json())
+              .then(data => {
+                console.log('Données de l/enseignant :', data);
+                var form = $('#editEnseignantModal').find('form');
+                form.attr('action', `modifierenseignant/${enseignantId}`);
+                form.find('input[name="matricule"]').val(data.matricule);
+                form.find('input[name="nom"]').val(data.nom);
+                form.find('input[name="prenom"]').val(data.prenom);
+                form.find('input[name="email"]').val(data.email);
+                form.find('input[name="telephone"]').val(data.telephone);
+                form.find('input[name="adresse"]').val(data.adresse);
+              })
+              .catch(error => {
+                console.error('Erreur lors de la récupération des données du poste :', error);
+              });
+          });
+        });
+      </script>
+
+      <script>
+        //var deleteModal = $(document)
+    
+        $(document).ready(function(){
+          $('.openModal').click(function(){
+            var enseignantId = $(this).data('id');
+            console.log(enseignantId);
+         
+            $('#deleteModal').modal('show');
+            var form = $('#deleteModal').find('form')
+            console.log(form);
+            form.attr('action', 'delete_enseignant/' + enseignantId);
+          })
+        })
+    </script>
+      <!--search bar-->
+      <script>
+        $(document).ready(function(){
+          //stoker les donnees du tableau dans une variable javascript
+          var tableData = [];
+          $('#enseignantTable tbody tr').each(function(){
+            var rowData = [];
+            $(this).find('td').each(function(){
+              rowData.push($(this).text());
+            });
+            tableData.push(rowData);
+          });
+
+          //initialisez datatables avec les donnees du tableau
+          $('#enseignantTable').DataTable({
+            data: tableData, // utilisation des donnes stockees
+            paging: true,
+            searching: false, // desactiver la recherche par defaut de datatables
+            info: false // supprimer l'info sur la recherche
+          });
+
+          // ajouter la fonction de recherche instantanee
+          $('#search-input').on('input', function(){
+            $('#enseignantTable').DataTable().search($(this).val()).draw();
+          });
+        });
+      </script>
+      <script>
+        //var deleteModal = $(document)
+    
+        $(document).ready(function(){
+          $('.openModal').click(function(){
+            var enseignantId = $(this).data('id');
+            console.log(enseignantId);
+         
+            $('#deleteModal').modal('show');
+            var form = $('#deleteModal').find('form')
+            console.log(form);
+            form.attr('action', 'delete_enseignant/' + enseignantId);
+          })
+        })
+    </script>
+
       
       {% endblock %}

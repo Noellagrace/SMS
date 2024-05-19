@@ -1,0 +1,155 @@
+{% extends 'link.html' %}
+{% load static %}
+{% block content %}
+
+
+
+
+    <h1>Liste des postes</h1>
+    <center><a href="/create_Poste" class="btn btn-primary"> Add new record</a></center>
+    <table class="table mt-3">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Code</th>
+            <th scope="col">Libelle</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for value in postes %}
+          <tr>
+            <th scope="row">{{value.id}}</th>
+            <td>{{value.code}}</td>
+            <td>{{value.libelle}}</td>
+            <td>
+              <button class="openModalButton btn btn-success btn-sm" data-id="{{ value.id }}"><i class="bi bi-pencil-fill"></i></button>        
+              <a class="btn btn-danger btn-sm" onclick="return confirm('do you really want to delete this items?')" href="#"><i class="bi bi-trash-fill"></i></a>
+
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td> No record found </td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+
+      <div class="modal fade" id="editPostModal" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header"> 
+              <h5 class="modal-title">Modifier</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form method="POST" class="post_form" action="modifier" >    
+                <h3>Modifier un poste</h3> <br/> 
+               
+                <div class="mb-3">
+                    <label for="code" class="form-label"> Code du poste </label>
+                    {{form.code}}
+                </div>
+                <div class="mb-3">
+                    <label for="libelle" class="form-label"> Libelle </label>
+                    {{form.libelle}}
+                </div>
+
+            </form>
+                    
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="modal fade" id="editPosteModal" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Modifier</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form method="POST" class="post_form" action="" id="editPosteForm">  
+                {% csrf_token %}
+                              <h3>Modifier un poste</h3> <br/> 
+               
+                <div class="mb-3">
+                    <label for="code" class="form-label"> Code du poste </label>
+                    <input type="text" name="code" class="form-control">
+                  
+                </div>
+                <div class="mb-3">
+                    <label for="libelle" class="form-label"> Libelle </label>
+                    <input type="text" name="libelle" class="form-control">
+                  
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </form>
+                    
+            </div>
+         
+          </div>
+        </div>
+      </div>
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+      <script>
+        /*(document).ready(function(){
+          $('#editPostModal').on('show.modal', function(event){
+            var button = $(event.relatedTarget); // Le bouton qui a déclenché le modal
+            var posteId = button.data('id'); // Extrait l'ID stocké dans l'attribut data-id du bouton
+      
+            // Mettez à jour l'action du formulaire avec l'ID du poste
+            var form = $(this).find('form');
+            form.attr('action', `/update_poste/${posteId}/`);
+      
+            // Optionnel : chargez les données du poste et remplissez le formulaire
+            fetch(`/edit_poste/${posteId}`)
+              .then(response => response.json())
+              .then(data => {
+                form.find('input[name="code"]').val(data.code);
+                form.find('input[name="libelle"]').val(data.libelle);
+              })
+              .catch(error => {
+                console.error('Erreur lors de la récupération des données du poste :', error);
+              });
+          });
+        });*/
+      </script>
+
+      <script>
+        $(document).ready(function(){
+          $('.openModalButton').click(function(){
+            var posteId = $(this).data('id'); // Récupère l'ID du poste à partir de l'attribut data-id du bouton cliqué
+            console.log('Identifiant du poste :', posteId);
+            
+            $('#editPosteModal').modal('show');
+
+            // Fetch les données du poste et les affiche dans le formulaire du modal
+            fetch(`/update_poste/${posteId}`)
+              .then(response => response.json())
+              .then(data => {
+                console.log('Données du poste :', data);
+                var form = $('#editPosteModal').find('form');
+                form.attr('action', `modifier/${posteId}`);
+                form.find('input[name="code"]').val(data.code);
+                form.find('input[name="libelle"]').val(data.libelle);
+              })
+              .catch(error => {
+                console.error('Erreur lors de la récupération des données du poste :', error);
+              });
+          });
+        });
+      </script>
+
+  
+      
+{% endblock %}

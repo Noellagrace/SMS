@@ -4,22 +4,19 @@
 
 
 
-
     <div class="container">
-    <form method="POST" class="post_form" action="create_Eleve" >    
+    <form method="POST" class="post_form" action="create_Poste" >    
     {% csrf_token %}
-    <h1>Ajouter un Eleve</h1>
+    <h1>Enregistrer un poste</h1>
    
     <div class="mb-3">
-      
-        {{form.as_p}}  
+        {{form.as_p}}
     </div>
-    
+   
     <div class="col-auto">
         <button type="submit" class="btn btn-primary mb-3">Enregistrer</button>
     </div>
 
 </form>
-</div>
 
 {% endblock %}

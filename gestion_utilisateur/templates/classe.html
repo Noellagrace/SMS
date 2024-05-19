@@ -7,15 +7,19 @@
     <div class="container">
     <form method="POST" class="post_form" action="create_classe" >    
     {% csrf_token %}
-    <h1>Hello, world!</h1>
+    <h1>Ajouter une Classe</h1>
    
     <div class="mb-3">
-        <label for="date_debut" class="form-label"> Code de la classe </label>
+        <label for="code" class="form-label"> Code de la classe </label>
         {{form.code}}
     </div>
     <div class="mb-3">
         <label for="libelle" class="form-label"> Libelle </label>
         {{form.libelle}}
+    </div>
+    <div class="mb-3">
+        <label for="montant" class="form-label"> Montant </label>
+        {{form.montant}}
     </div>
     <div class="col-auto">
         <button type="submit" class="btn btn-primary mb-3">Enregistrer</button>

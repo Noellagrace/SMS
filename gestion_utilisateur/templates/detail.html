@@ -1,0 +1,121 @@
+{% extends 'link.html' %}
+{% load static %}
+{% block content %}
+
+
+
+<h1>Details de  l'eleves</h1>
+<a class="openModalButton btn btn-primary" href="/create_parent"> Ajouter parent </a>
+
+
+   <!-- Vertically centered Modal -->
+   <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#verticalycentered">
+    Associer un parent
+  </button>
+  <div class="modal fade" id="verticalycentered" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Enregistrer un parent</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form method="POST" class="post_form" action="/create_parent" id="">  
+              {% csrf_token %}
+                            <h3>Enregistrer un parent</h3> <br/> 
+              
+                            <div class="mb-3">
+      
+                                {{form.as_p}}  
+                            </div>    
+             
+                            <!--
+              <div class="mb-3">
+                  <label for="nom_pere" class="form-label"> Nom du pere </label>
+                  <input type="text" name="nom_pere" class="form-control">
+                
+              </div>
+              <div class="mb-3">
+                  <label for="prenom_pere" class="form-label"> prenom du pere </label>
+                  <input type="text" name="prenom_pere" class="form-control">
+                
+              </div>
+              <div class="mb-3">
+                <label for="nom_mere" class="form-label"> Nom de la mere </label>
+                <input type="text" name="nom_pere" class="form-control">
+              
+               </div>
+              <div class="mb-3">
+                <label for="prenom_mere" class="form-label"> Prenom de la mere </label>
+                <input type="text" name="prenom_mere" class="form-control">
+              
+               </div>
+              <div class="mb-3">
+              <label for="email_pere" class="form-label"> Email du pere </label>
+              <input type="email" name="email_pere" class="form-control">
+            
+              </div>
+              <div class="mb-3">
+                <label for="email_mere" class="form-label"> Email de la mere </label>
+                <input type="email" name="email_mere" class="form-control">
+              
+                </div>
+            <div class="mb-3">
+              <label for="telephone_pere" class="form-label"> Telephone du pere</label>
+              <input type="text" name="telephone_pere" class="form-control">
+            
+            </div>
+            <div class="mb-3">
+                 <label for="telephone_mere" class="form-label"> Telephone de la mere</label>
+                <input type="text" name="telephone_mere" class="form-control">
+              
+            </div>
+            <div class="mb-3">
+              <label for="adresse" class="form-label"> Adresse </label>
+              <input type="text" name="adresse" class="form-control">
+            
+            </div> -->
+            
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="submit" class="btn btn-primary">Enregistrer</button>
+              </div> 
+             </form>
+                  
+          </div>
+      </div>
+    </div>
+  </div><!-- End Vertically centered Modal-->
+
+  <hr/>
+
+  <div>
+   <h3>INFORMATION GENERALES SUR L'ELEVE</h3>
+   <p>Nom: {{ eleve.nom }}</p>
+   <p>Prénom: {{ eleve.prenom }}</p>
+   <p>Date de naissance: {{ eleve.date_naissance }}</p>
+   <p>Adresse: {{ eleve.adresse }}</p>
+   <p>Classe: {{ eleve.classe }}</p>
+
+  </div>
+
+  <hr/>
+
+  <div>
+   <h3>INFORMATION LE PARENT</h3>
+   <p>Nom du Pere: {{ parent.nom_pere }}</p>
+   <p>Prenom du Pere: {{ parent.prenon_pere }}</p>
+   <p>Nom de la Mere: {{ parent.nom_mere }}</p>
+   <p>Prenom de la Mere: {{ parent.prenon_mere }}</p>
+   <p>Email du Pere: {{ parent.email_pere }}</p>
+   <p>Email de la Mere: {{ parent.email_mere }}</p>
+   <p>Telephone du Pere: {{ parent.telephone_pere }}</p>
+   <p>Telephone de la Mere: {{ parent.telephone_mere }}</p>
+   <p>Adresse: {{ parent.adresse }}</p>
+
+  </div>
+
+
+
+
+{% endblock %}

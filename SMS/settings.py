@@ -73,6 +73,9 @@ TEMPLATES = [
 WSGI_APPLICATION = 'SMS.wsgi.application'
 
 
+AUTH_USER_MODEL = 'gestion_utilisateur.Personnel_ad'
+
+
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
