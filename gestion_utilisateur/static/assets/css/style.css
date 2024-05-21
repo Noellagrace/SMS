@@ -814,8 +814,8 @@ h6 {
 .dashboard .card-icon {
   font-size: 32px;
   line-height: 0;
-  width: 64px;
-  height: 64px;
+  width: 85px !important;
+  height: 85px !important;
   flex-shrink: 0;
   flex-grow: 0;
 }
@@ -1230,4 +1230,9 @@ h6 {
   text-align: center;
   font-size: 13px;
   color: #012970;
+}
+.imgIcone{
+
+  width: 75px;
+  height: 75px;
 }

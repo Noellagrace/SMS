@@ -11,6 +11,21 @@ from django.views.generic.edit import UpdateView, DeleteView
 # Create your views here.
 
 
+def dashboard(request):
+    total_eleves = Eleve.objects.count()
+    total_enseignants = Enseignant.objects.count()
+    total_postes = Poste.objects.count()
+    total_classes = Classe.objects.count()
+
+    return render (request, 'dashboard.html', {
+        'total_eleves': total_eleves ,
+        'total_enseignants': total_enseignants ,
+        'total_postes': total_postes ,
+        'total_classes': total_classes 
+
+    })
+
+
 def create_anneescolaire(request):
     form = AnneScolaireForm()
 
@@ -29,14 +44,14 @@ def create_anneescolaire(request):
     else:
         form = AnneScolaireForm()
     return render(request, 'anneescolaire.html',{'form':form})
-        
+         
 def show_anneescolaire(request):
     anneescolaires = Annee_scolaire.objects.order_by('-id');
     return render(request, 'index_annee.html', {'anneescolaires':anneescolaires})
 
-def dashboard(request):
+"""def dashboard(request):
     return render(request, 'index.html')
-
+"""
 
 
 def create_classe(request):
@@ -253,13 +268,6 @@ def change_password(request):
         'form' : form,
     } 
     return render(request, 'pwd_forgot.html', context)        
-
-
-"""class Update_poste(UpdateView):
-    models = Poste
-    form_class= PosteForm
-    template = 'update_poste.html'
-"""
 
 
 def modifier(request, id):
@@ -479,7 +487,7 @@ def search_eleve(request):
 
 def detail(request, id):
     eleve = get_object_or_404(Eleve, id=id)
-    form= ParentForm()
-    # parent = get_object_or_404(Parent, id=id)
-    return render(request, 'detail.html', {'eleve': eleve,'form':form})
+    #form= ParentForm()
+    parent = get_object_or_404(Parent, eleve_id=id)
+    return render(request, 'detail.html', {'eleve': eleve, 'parent':parent})
 
