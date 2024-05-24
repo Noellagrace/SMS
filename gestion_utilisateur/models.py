@@ -39,6 +39,8 @@ class Enseignant(models.Model):
     email = models.EmailField()
     telephone = models.CharField(max_length=15)
     adresse = models.CharField(max_length=25)
+    classe = models.ForeignKey(Classe,on_delete = models.CASCADE)
+    
     def save(self, *args, **kwargs) -> None:
         if not self.matricule:
             self.matricule = generer_matricule(Enseignant)
@@ -57,6 +59,9 @@ class Eleve(models.Model):
     adresse = models.CharField(max_length=25)
     classe = models.ForeignKey(Classe, on_delete = models.CASCADE)
     annee_scolaire = models.ManyToManyField(Annee_scolaire)
+    classe = models.ForeignKey(Classe, on_delete = models.CASCADE)
+
+
     def save(self, *args, **kwargs) -> None:
         if not self.matricule:
             self.matricule = generer_matricule(Eleve)
@@ -90,4 +95,8 @@ class Personnel_ad(AbstractUser):
 
     def __str__(self):
         return self.username
+    
+
+
+
     

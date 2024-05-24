@@ -30,7 +30,7 @@ class ClasseForm(forms.ModelForm):
 class EnseignantForm(forms.ModelForm):
     class Meta:
         model = Enseignant
-        fields = ['matricule', 'nom', 'prenom', 'email', 'telephone', 'adresse']
+        fields = ['matricule', 'nom', 'prenom', 'email', 'telephone', 'adresse', 'classe']
         widgets = {
             'matricule' : forms.TextInput(attrs={'class': 'form-control'}),
             'nom' : forms.TextInput(attrs={'class': 'form-control'}),
@@ -38,6 +38,7 @@ class EnseignantForm(forms.ModelForm):
             'email' : forms.TextInput(attrs={'class': 'form-control'}),
             'telephone' : forms.TextInput(attrs={'class': 'form-control'}),
             'adresse' : forms.TextInput(attrs={'class': 'form-control'}),
+            'classe' : forms.Select(attrs={'class': 'form-control'}),
         }
 
 
@@ -104,6 +105,7 @@ class Personnel_adForm(forms.ModelForm):
         }
 
 
+    
 class ChangePasswordForm(PasswordChangeForm):
     old_password = forms.CharField(label="ancien mot de pass:", max_length=32, widget=forms.PasswordInput(attrs={'class': 'form-control'}))
     new_password1 = forms.CharField(label="nouveau mot de pass:", max_length=32, widget=forms.PasswordInput(attrs={'class': 'form-control'}),

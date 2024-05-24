@@ -23,6 +23,7 @@
             <th scope="col">Email</th>
             <th scope="col">Telephone</th>
             <th scope="col">Adresse</th>
+            <th scope="col">Classe</th>
             <th scope="col">Action</th>
           </tr>
         </thead>
@@ -36,6 +37,7 @@
             <td>{{value.email}}</td>
             <td>{{value.telephone}}</td>
             <td>{{value.adresse}}</td>
+            <td>{{value.classe}}</td>
             <td>
               <button class="openModalButton btn btn-success btn-sm" data-id="{{ value.id }}"><i class="bi bi-pencil-fill"></i></button>        
               <!--<a class="openModal btn btn-danger btn-sm" onclick="return confirm('do you really want to delete this items?')" href="delete_annee/"><i class="bi bi-trash-fill"></i></a> -->
@@ -59,8 +61,10 @@
               <form method="POST" class="post_form" action="" id="editEnseignantForm">  
                 {% csrf_token %}
                               <h3>Modifier les infos d'un enseignant</h3> <br/> 
+
+                         {{form.as_p}}     
                
-                <div class="mb-3">
+                <!--<div class="mb-3">
                     <label for="matricule" class="form-label"> Matricule </label>
                     <input type="text" name="matricule" class="form-control">
                   
@@ -89,7 +93,7 @@
                 <label for="adresse" class="form-label"> Adresse </label>
                 <input type="text" name="adresse" class="form-control">
               
-              </div>
+              </div> -->
               
                 <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
@@ -160,6 +164,7 @@
                 form.find('input[name="email"]').val(data.email);
                 form.find('input[name="telephone"]').val(data.telephone);
                 form.find('input[name="adresse"]').val(data.adresse);
+                form.find('select[name="classe"]').val(data.classe);
               })
               .catch(error => {
                 console.error('Erreur lors de la récupération des données du poste :', error);

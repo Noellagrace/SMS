@@ -1,0 +1,198 @@
+{% extends 'link.html' %}
+{% load static %}
+{% block content %}
+
+
+
+    <h1>Les Matieres</h1>
+    <center><a href="/create_matiere" class="btn btn-primary"> Enregistrer une Matiere</a></center>
+    <table class="table mt-3">
+        <thead>
+          
+          <div class="search-bar">
+            
+            <form  class="search-form d-flex align-items-center" method="POST" action="/search_matiere">
+              {% csrf_token %}
+              <input type="text" name="query" placeholder="Search" title="Enter search keyword">
+              <button type="submit" title="Search"><i class="bi bi-search"></i></button>
+            </form>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Classe</th>
+            <th scope="col">Code</th>
+            <th scope="col">Libelle</th>
+            <th scope="col">Coeficient</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for value in matieres %}
+          <tr>
+            <th scope="row">{{value.id}}</th>
+            <td>{{value.classe}}</td>
+            <td>{{value.code}}</td>
+            <td>{{value.libelle}}</td>
+            <td>{{value.coeficient}}</td>
+            <td>
+              <button class="openModalButton btn btn-success btn-sm" data-id="{{ value.id }}"><i class="bi bi-pencil-fill"></i></button>        
+              <!--<a class="openModal btn btn-danger btn-sm" onclick="return confirm('do you really want to delete this items?')" href="delete_annee/"><i class="bi bi-trash-fill"></i></a> -->
+              <button class="openModal btn btn-danger btn-sm" data-id="{{ value.id }}"><i class="bi bi-trash-fill"></i></button>  
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td> No record found </td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      
+      <div class="modal fade" id="editMatiereModal" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Modifier</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form method="POST" class="post_form" action="" id="editMatiereForm">  
+                {% csrf_token %}
+                              <h3>Modifier une Matiere </h3> <br/> 
+
+                              {{form.as_p}}
+               
+                  <!--<div class="mb-3">
+                    <label for="classe" class="form-label"> Classe </label>
+                    <input type="text" name="classe" class="form-control">
+                  
+                </div>
+                <div class="mb-3">
+                    <label for="code" class="form-label"> Code </label>
+                    <input type="text" name="code" class="form-control">
+                  
+                </div>
+                <div class="mb-3">
+                  <label for="libelle" class="form-label"> Libelle </label>
+                  <input type="text" name="libelle" class="form-control">
+                
+                </div>
+                <div class="mb-3">
+                    <label for="Coeficient" class="form-label"> Coeficient </label>
+                    <input type="number" name="Coeficient" class="form-control">
+                  
+                </div> -->
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                  <button type="submit" class="btn btn-primary">Enregistrer</button>
+                </div> 
+            </form>
+                    
+            </div>
+         
+          </div>
+        </div>
+      </div>
+          <!-- Small Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <form action="" method="post" style="display: inline;">
+        {% csrf_token %}
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold">Confirmez cette action!</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        ETES VOUS SUR DE VOULOIR SUPPRIMER CETTE MATIERE?? 
+   
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 1 1 .708.708L8.707 8l2.647 2.646a.5.5 0 1 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 1 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+          </svg>
+          Fermer
+        </button>
+        <button type="submit" class="btn btn-success" data-bs-dismiss="modal">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check" viewBox="0 0 16 16">
+            <path d="M13.354 4.646a.5.5 0 0 0-.708 0L6 11.293 3.354 8.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l7-7a.5.5 0 0 0 0-.708z"/>
+          </svg>
+          Supprimer
+        </button>
+      </div>
+             
+    </form>
+    </div>
+  </div>
+</div><!-- End Small Modal-->
+    
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+      <script>
+        $(document).ready(function(){
+          $('.openModalButton').click(function(){
+            var matiereId = $(this).data('id'); // Récupère l'ID du poste à partir de l'attribut data-id du bouton cliqué
+            console.log('Identifiant de la matiere :', matiereId);
+            
+            $('#editMatiereModal').modal('show');
+
+            // Fetch les données du poste et les affiche dans le formulaire du modal
+            fetch(`/update_matiere/${matiereId}`)
+              .then(response => response.json())
+              .then(data => {
+                console.log('Données de la matiere :', data);
+                var form = $('#editMatiereModal').find('form');
+                form.attr('action', `modifiermatiere/${matiereId}`);
+                form.find('select[name="classe"]').val(data.classe);
+                form.find('input[name="code"]').val(data.code);
+                form.find('input[name="libelle"]').val(data.libelle);
+                form.find('select[name="coeficient"]').val(data.coeficient);
+              })
+              .catch(error => {
+                console.error('Erreur lors de la récupération des données de la matiere :', error);
+              });
+          });
+        });
+      </script>
+      <script>
+        //var deleteModal = $(document)
+    
+        $(document).ready(function(){
+          $('.openModal').click(function(){
+            var matiereId = $(this).data('id');
+            console.log(matiereId);
+         
+            $('#deleteModal').modal('show');
+            var form = $('#deleteModal').find('form')
+            console.log(form);
+            form.attr('action', 'delete_matiere/' + matiereId);
+          })
+        })
+    </script>
+    <script>
+      $(document).ready(function(){
+        //stoker les donnees du tableau dans une variable javascript
+        var tableData = [];
+        $('#matiereTable tbody tr').each(function(){
+          var rowData = [];
+          $(this).find('td').each(function(){
+            rowData.push($(this).text());
+          });
+          tableData.push(rowData);
+        });
+
+        //initialisez datatables avec les donnees du tableau
+        $('#matiereTable').DataTable({
+          data: tableData, // utilisation des donnes stockees
+          paging: true,
+          searching: false, // desactiver la recherche par defaut de datatables
+          info: false // supprimer l'info sur la recherche
+        });
+
+        // ajouter la fonction de recherche instantanee
+        $('#search-input').on('input', function(){
+          $('#matiereTable').DataTable().search($(this).val()).draw();
+        });
+      });
+    </script>
+
+      
+{% endblock %}
