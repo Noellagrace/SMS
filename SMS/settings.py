@@ -74,7 +74,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'SMS.wsgi.application'
 
 
-AUTH_USER_MODEL = 'gestion_utilisateur.Personnel_ad'
+AUTH_USER_MODEL = 'gestion_utilisateur.CustomUser'
 
 
 # Database

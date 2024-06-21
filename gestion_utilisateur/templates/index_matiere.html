@@ -18,10 +18,8 @@
             </form>
           <tr>
             <th scope="col">#</th>
-            <th scope="col">Classe</th>
             <th scope="col">Code</th>
             <th scope="col">Libelle</th>
-            <th scope="col">Coeficient</th>
             <th scope="col">Actions</th>
           </tr>
         </thead>
@@ -29,10 +27,8 @@
             {% for value in matieres %}
           <tr>
             <th scope="row">{{value.id}}</th>
-            <td>{{value.classe}}</td>
             <td>{{value.code}}</td>
             <td>{{value.libelle}}</td>
-            <td>{{value.coeficient}}</td>
             <td>
               <button class="openModalButton btn btn-success btn-sm" data-id="{{ value.id }}"><i class="bi bi-pencil-fill"></i></button>        
               <!--<a class="openModal btn btn-danger btn-sm" onclick="return confirm('do you really want to delete this items?')" href="delete_annee/"><i class="bi bi-trash-fill"></i></a> -->

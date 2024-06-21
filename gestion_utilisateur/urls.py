@@ -3,8 +3,14 @@ from django.urls import path
 
 urlpatterns = [
     path('dashboard',views.dashboard),
+    path('dsh_enseignant',views.dsh_enseignant),
     path('create_anneescolaire', views.create_anneescolaire),
     path('show_anneescolaire', views.show_anneescolaire),
+    path('create_notes', views.create_notes),
+    path('show_notes', views.show_notes),
+    path('create_Enseignement', views.create_Enseignement),
+    path('show_enseignement', views.show_enseignement),
+    path('filtrer_eleves/<int:id>', views.filtrer_eleves, name='filtrer_eleves'),
     path('create_parent', views.create_parent),
     path('show_parent', views.show_parent),
     path('create_matiere', views.create_matiere),
@@ -20,6 +26,7 @@ urlpatterns = [
     path('create_Poste', views.create_Poste),
     path('show_poste', views.show_poste),
     path('login_user', views.login_user),
+    path('log_out', views.log_out),
     path('register_user', views.register_user),
     path('', views.login_view , name='account/login/'),
     path('pwd_oublier', views.pwd_oublier),
@@ -39,6 +46,7 @@ urlpatterns = [
     path('update_enseignant/<int:id>', views.update_enseignant, name="update_enseignant"),
     path('update_eleve/<int:id>', views.update_eleve, name="update_eleve"),
     path('delete_annee/<int:id>', views.delete_annee, name="delete_annee"),
+    path('delete_enseignement/<int:id>/<int:enseignant_id>/', views.delete_enseignement, name='delete_enseignement'),
     path('delete_eleve/<int:id>', views.delete_eleve, name="delete_eleve"),
     path('delete_enseignant/<int:id>', views.delete_enseignant, name="delete_enseignant"),
     path('delete_classe/<int:id>', views.delete_classe, name="delete_classe"),
@@ -46,7 +54,11 @@ urlpatterns = [
     path('search_enseignant', views.search_enseignant),
     path('search_annee', views.search_annee),
     path('search_eleve', views.search_eleve),
-    path('detail/<int:id>', views.detail), 
+    path('detail/<int:id>', views.detail),
+    path('affecter/<int:id>', views.affecter), 
+    path('affecter_notes', views.affecter_notes),
+    path('get_matiere_for_classe/<int:classe_id>/', views.get_matiere_for_classe, name='get_matiere_for_classe'),
+    path('get_coeficient_for_classe/<int:classe_id>/', views.get_coeficient_for_classe, name='get_coeficient_for_classe'),
+    path('save_notes/', views.save_notes, name='save_notes'),
 
-    
 ] 

@@ -29,22 +29,30 @@ class ClasseForm(forms.ModelForm):
 
 class EnseignantForm(forms.ModelForm):
     class Meta:
-        model = Enseignant
-        fields = ['matricule', 'nom', 'prenom', 'email', 'telephone', 'adresse', 'classe']
+        model = Professeur
+        exclude = ['user', 'matricule']  # Exclure le champ 'user' du formulaire
+
+        # Vous pouvez ajouter d'autres configurations ici si nécessaire
+
+
+class EnseignementForm(forms.ModelForm):
+    class Meta:
+        model = Enseignement
+        exclude = ['enseignant']
+        fields = '__all__'
         widgets = {
-            'matricule' : forms.TextInput(attrs={'class': 'form-control'}),
-            'nom' : forms.TextInput(attrs={'class': 'form-control'}),
-            'prenom' : forms.TextInput(attrs={'class': 'form-control'}),
-            'email' : forms.TextInput(attrs={'class': 'form-control'}),
-            'telephone' : forms.TextInput(attrs={'class': 'form-control'}),
-            'adresse' : forms.TextInput(attrs={'class': 'form-control'}),
+            'enseignant' : forms.Select(attrs={'class': 'form-control'}),
             'classe' : forms.Select(attrs={'class': 'form-control'}),
+            'matiere' : forms.Select(attrs={'class': 'form-control'}),
+            'coeficient' : forms.Select(attrs={'class': 'form-control'}),
         }
+
 
 
 class EleveForm(forms.ModelForm):
     class Meta:
         model = Eleve
+        exclude = ['matricule']
         fields = '__all__'
         widgets = {
             'matricule': forms.TextInput(attrs={'class': 'form-control'}),
@@ -58,7 +66,7 @@ class EleveForm(forms.ModelForm):
 
 class ParentForm(forms.ModelForm):
     class Meta:
-        model = Parent
+        model = Parent_eleve
         fields = '__all__'
         widgets = {
             'nom_pere' : forms.TextInput(attrs={'class': 'form-control'}),
@@ -83,14 +91,10 @@ class PosteForm(forms.ModelForm):
             'libelle' : forms.TextInput(attrs={'class': 'form-control'}),
         }
 
-class Personnel_adForm(forms.ModelForm):
+class PersonnelForm(forms.ModelForm):
 
-    username = forms.CharField(
-        max_length=150,  # Assuming the max_length for username is 150
-        widget=forms.TextInput(attrs={'class': 'form-control'})
-    )
     class Meta:
-        model = Personnel_ad
+        model = Personnel
         exclude = ['is_staff','date_joined','is_active','groups','user_permissions','is_superuser','last_login']
         fields = '__all__'
         widgets = {
@@ -104,7 +108,6 @@ class Personnel_adForm(forms.ModelForm):
             'poste' : forms.Select(attrs={'class': 'form-control'}),
         }
 
-
     
 class ChangePasswordForm(PasswordChangeForm):
     old_password = forms.CharField(label="ancien mot de pass:", max_length=32, widget=forms.PasswordInput(attrs={'class': 'form-control'}))
@@ -113,3 +116,28 @@ class ChangePasswordForm(PasswordChangeForm):
     new_password2 = forms.CharField(label="confirmation de mot de pass:", max_length=32, widget=forms.PasswordInput(attrs={'class': 'form-control'}))
     class Meta:
         model = User 
+
+
+class CustomUserForm(forms.ModelForm):
+    class Meta:
+        model = CustomUser
+        exclude = ['matricule', 'user_type']
+        fields = ['matricule','nom','prenom','telephone','address','email', 'sexe']
+        labels = {
+            'matricule': 'Matricule',
+            'nom': 'Nom',
+            'prenom': 'Prénom',
+            'telephone': 'Téléphone',
+            'address': 'Adresse',
+            'email': 'Adresse email',
+            'sexe': 'Sexe',
+        }
+        widgets = {
+            'matricule': forms.TextInput(attrs={'class': 'form-control'}),
+            'nom': forms.TextInput(attrs={'class': 'form-control'}),
+            'prenom': forms.TextInput(attrs={'class': 'form-control'}),
+            'telephone': forms.TextInput(attrs={'class': 'form-control'}),
+            'address': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'sexe': forms.Select(attrs={'class': 'form-control'}),
+        }

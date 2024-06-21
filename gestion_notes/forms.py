@@ -10,10 +10,8 @@ class MatiereForm(forms.ModelForm):
         model = Matiere
         fields = '__all__'
         widgets = {
-            'classe' : forms.Select(attrs={'class': 'form-control'}),
             'code' : forms.TextInput(attrs={'class': 'form-control'}),
             'libelle' : forms.TextInput(attrs={'class': 'form-control'}),
-            'coeficient' : forms.Select(attrs={'class': 'form-control'}),
         } 
 
 
@@ -26,25 +24,18 @@ class SemestreForm(forms.ModelForm):
         }
 
 
-class EvaluationForm(forms.ModelForm):
-    class Meta:
-        model = Evaluation
-        fields = '__all__'
-        widgets = {
-            'type' : forms.Select(attrs={'class': 'form-control'}),
-            'date_debut' : forms.TextInput(attrs={'class': 'form-control'}),
-            'date_fin' : forms.TextInput(attrs={'class': 'form-control'}),
-            'matiere' : forms.Select(attrs={'class': 'form-control'}),
-        } 
-
-
 class NoteForm(forms.ModelForm):
     class Meta:
         model = Note
         fields = '__all__'
         widgets = {
-            'notes' : forms.Select(attrs={'class': 'form-control'}),
-            'eleve' : forms.TextInput(attrs={'class': 'form-control'}),
-            'matiere' : forms.TextInput(attrs={'class': 'form-control'}),
-            'evaluation' : forms.TextInput(attrs={'class': 'form-control'}),
+            'eleve' : forms.Select(attrs={'class': 'form-control'}),
+            'note' : forms.NumberInput(attrs={'class': 'form-control'}),
+            'note_coeficiee' : forms.NumberInput(attrs={'class': 'form-control'}),
+            'classe' : forms.TextInput(attrs={'class': 'form-control'}),
+            'sequence' : forms.TextInput(attrs={'class': 'form-control'}),
+            'matiere' : forms.Select(attrs={'class': 'form-control'}),
+            'evaluation' : forms.Select(attrs={'class': 'form-control'}),
+            'enseignant' : forms.Select(attrs={'class': 'form-control'}),
+            'date' : forms.DateInput(attrs={'class': 'form-control'}),
         }                               

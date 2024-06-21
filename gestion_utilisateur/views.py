@@ -2,6 +2,7 @@ from django.forms import model_to_dict
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from SMS import settings
 from gestion_utilisateur.forms import *
@@ -9,6 +10,14 @@ from gestion_notes.models import *
 from gestion_notes.forms import *
 from gestion_utilisateur.models import *
 from django.views.generic.edit import UpdateView, DeleteView
+from datetime import datetime
+from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse
+
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 # Create your views here.
 
@@ -109,6 +118,7 @@ def show_matiere(request):
     matieres = Matiere.objects.order_by('-id');
     form = MatiereForm()
     return render(request, 'index_matiere.html', {'matieres':matieres, 'form':form})
+
 
 
 def modifiermatiere(request, id):
@@ -217,7 +227,7 @@ def delete_classe(request,id):
 def create_personnelAD(request):
 
     if request.method == "POST":
-        form = Personnel_adForm(request.POST)
+        form = PersonnelForm(request.POST)
 
         if form.is_valid():
             try:
@@ -226,23 +236,23 @@ def create_personnelAD(request):
                 return redirect('/show_personnelAD')
             except:
                 message = "something is wromg!"
-                form = Personnel_adForm()
+                form = PersonnelForm()
             return render(request, 'personnel.html',{'message':message,'form':form})
         else:
             messages.success(request, "formulaire invalid")
     else:
-        form = Personnel_adForm()
+        form = PersonnelForm()
     return render(request, 'personnel.html',{'form':form})
 
 def show_personnelAD(request):
-    personnelADS = Personnel_ad.objects.order_by('-id');
+    personnelADS = Personnel.objects.order_by('-id');
     return render(request, 'index_personnel.html', {'personnelADS':personnelADS})
 
 
 def modifierpersonnel(request, id):
-    obj = Personnel_ad.objects.get(id=id)
+    obj = Personnel.objects.get(id=id)
     print(obj)
-    form = Personnel_adForm(request.POST or None, instance=obj)
+    form = PersonnelForm(request.POST or None, instance=obj)
     print(form)
     messages = ''
     if form.is_valid():  # Ajoutez les parenthèses ici
@@ -253,14 +263,82 @@ def modifierpersonnel(request, id):
 
 
 def update_personnel(request, id):
-    personnel_ad = get_object_or_404(Personnel_ad, id=id)
-    form = Personnel_adForm(instance=personnel_ad)
+    personnel_ad = get_object_or_404(Personnel, id=id)
+    form = PersonnelForm(instance=personnel_ad)
     form_data = model_to_dict(form.instance)
     return JsonResponse(form_data)
 
 
+
+
+# enseignement element
+def create_Enseignement(request):
+    form = EnseignementForm(request.POST or None)
+
+    if request.method == "POST":
+        if form.is_valid():
+            enseignement = form.save(commit=False)
+            # Récupérer l'enseignant à partir de l'ID passé et l'associer
+            enseignant_id = request.POST.get('enseignant_id')
+            enseignant = get_object_or_404(Professeur, id=enseignant_id)
+            enseignement.enseignant = enseignant
+            try:
+                enseignement.save()
+                messages.success(request, "Création réussie !")
+                return redirect('/affecter/'+str(enseignant_id))  # Assurez-vous que cette URL est correcte
+            except Exception as e:
+                messages.error(request, f"Une erreur s'est produite : {e}")
+        else:
+            messages.error(request, "Le formulaire est invalide.")
+
+    return render(request, 'affecter.html', {'form': form})
+
+
+"""def create_Enseignement(request):
+    form = EnseignementForm(request.POST or None)
+
+    if request.method == "POST":
+        form = EnseignementForm(request.POST)
+
+        if form.is_valid():
+            enseignement = form.save(commit=False)
+            # Récupérer l'enseignant à partir de l'ID passé et l'associer
+            enseignant_id = request.POST.get('enseignant_id')
+            enseignant = get_object_or_404(Enseignant, id=enseignant_id)
+            enseignement.enseignant = enseignant
+            try:
+                form.save()
+                messages.success(request, "created successfuly!")
+                return redirect('/affecter')
+            except:
+                message = "something is wromg!"
+                form = EnseignementForm()
+            return render(request, 'affecter.html',{'message':message,'form':form})
+        else:
+            messages.success(request, "formulaire invalid")
+    else:
+        form = EnseignementForm()
+    return render(request, 'affecter.html',{'form':form})
+
+"""
+def show_enseignement(request):
+    enseignements = Enseignement.objects.order_by('-id');
+    form = EnseignementForm()
+    return render(request, 'affecter.html', {'enseignements':enseignements, 'form':form})
+
+
+def delete_enseignement(request,id):
+    enseignement = get_object_or_404(Enseignement, id=id)
+    enseignant_id = request.POST.get('enseignant_id')  # Récupérer de POST
+
+    enseignement.delete()
+    messages.success(request, 'enseignant supprimer avec succes')
+    return redirect('/affecter/' +str(enseignant_id))
+
+
+
 # enseignant element
-def create_Enseignant(request):
+"""def create_Enseignant(request):
 
     if request.method == "POST":
         form = EnseignantForm(request.POST)
@@ -279,16 +357,52 @@ def create_Enseignant(request):
     else:
         form = EnseignantForm()
     return render(request, 'enseignant.html',{'form':form})
+"""
+
+def create_Enseignant(request):
+    if request.method == "POST":
+        enseignant_form = EnseignantForm(request.POST)
+        user_form = CustomUserForm(request.POST)
+        if user_form.is_valid() and enseignant_form.is_valid():
+            try:
+                user = user_form.save(commit=False)
+                user.user_type = 2
+                
+                default_password = "password123"  # Mot de passe par défaut
+                user.set_password(default_password)
+                user.save()
+
+                # Créer l'enseignant et associer l'utilisateur
+                enseignant = enseignant_form.save(commit=False)
+                enseignant.user = user
+                enseignant.save()
+
+                messages.success(request, "Enseignant créé avec succès!")
+                return redirect('/show_enseignant')
+            except Exception as e:
+                messages.error(request, f"Une erreur s'est produite: {e}")
+                form = EnseignantForm()  # Réinitialiser le formulaire en cas d'erreur
+        else:
+            messages.error(request, "Formulaire invalide")
+            print("Erreurs de formulaire:", form.errors)  # Afficher les erreurs de formulaire
+    else:
+        form = EnseignantForm()
+
+    return render(request, 'index_enseignant.html', {'user_form': user_form, 'enseignant_form':enseignant_form})
+
+
 
 def show_enseignant(request):
-    enseignants = Enseignant.objects.order_by('-id');
-    form = EnseignantForm()
-    return render(request, 'index_enseignant.html', {'enseignants':enseignants, 'form':form})
-
+    enseignants = Professeur.objects.order_by('-id');
+    user_form = CustomUserForm()
+    enseignant_form = EnseignantForm()
+    matiereForm = MatiereForm()
+    classForm = ClasseForm()
+    return render(request, 'index_enseignant.html', {'enseignants':enseignants,'enseignant_form':enseignant_form, 'user_form':user_form, 'matiereForm':matiereForm,'classForm':classForm})
 
 
 def modifierenseignant(request, id):
-    obj = Enseignant.objects.get(id=id)
+    obj = Professeur.objects.get(id=id)
     print(obj)
     form = EnseignantForm(request.POST or None, instance=obj)
     print(form)
@@ -301,14 +415,14 @@ def modifierenseignant(request, id):
 
 
 def update_enseignant(request, id):
-    enseignant = get_object_or_404(Enseignant, id=id)
+    enseignant = get_object_or_404(Professeur, id=id)
     form = EnseignantForm(instance=enseignant)
     form_data = model_to_dict(form.instance)
     return JsonResponse(form_data)
 
 
 def delete_enseignant(request,id):
-    enseignant = get_object_or_404(Enseignant, id=id)
+    enseignant = get_object_or_404(Professeur, id=id)
     enseignant.delete()
     messages.success(request, 'enseignant supprimer avec succes')
     return redirect('/show_enseignant')
@@ -317,19 +431,19 @@ def delete_enseignant(request,id):
 def search_enseignant(request):
     if request.method == 'POST':
         query = request.POST.get('query', '')
-        enseignants = Enseignant.objects.filter(nom__icontains=query)
+        enseignants = Professeur.objects.filter(nom__icontains=query)
     
     #conversion des resultats de la requette en un dictionnaire de reponse en json
         results = []
         for enseignant in enseignants:
             results.append({
-                'matricule': Enseignant.matricule,
-                'nom': Enseignant.nom,
-                'prenom': Enseignant.prenom,
-                'email': Enseignant.email,
-                'telephone': Enseignant.telephone,
-                'adresse': Enseignant.adresse,
-                'classe': Enseignant.classe,
+                'matricule': Professeur.matricule,
+                'nom': Professeur.nom,
+                'prenom': Professeur.prenom,
+                'email': Professeur.email,
+                'telephone': Professeur.telephone,
+                'adresse': Professeur.adresse,
+                'classe': Professeur.classe,
             })
             print(enseignant)
         return render(request, 'index_enseignant.html', {'enseignants': enseignants})    
@@ -514,7 +628,10 @@ def login_view(request):
        if user is not None:
            login(request, user)
            messages.success(request, 'vous avez ete connecte avec succes')
-           return redirect('/dashboard')
+           if user.user_type is 2:
+               return redirect('/dsh_enseignant')
+           else:
+                return redirect('/dashboard')
        else:
            messages.warning(request, "username ou password est incorect")
            return redirect('/account/login/')
@@ -523,9 +640,9 @@ def login_view(request):
 
 
 def log_out(request):
-   log_out(request)
+   logout(request)
    messages.success(request, "logged out succesfully")
-   return redirect('/account/login/')
+   return redirect('/')
 
 
 def pwd_oublier(request):
@@ -564,7 +681,7 @@ def detail(request, id):
 
 def dashboard(request):
     total_eleves = Eleve.objects.count()
-    total_enseignants = Enseignant.objects.count()
+    total_enseignants = Professeur.objects.count()
     total_postes = Poste.objects.count()
     total_classes = Classe.objects.count()
     #total_matieres = Matiere.objects.count()
@@ -576,4 +693,192 @@ def dashboard(request):
         'total_classes': total_classes,
        # 'total_matieres': total_matieres 
 
+    })
+
+def dsh_enseignant(request):
+    total_notes = Note.objects.count()
+    total_classes = Classe.objects.count()
+    #total_matieres = Matiere.objects.count()
+
+    return render (request, 'dsh_enseignant.html', {
+        'total_notes': total_notes ,
+        'total_classes': total_classes,
+       # 'total_matieres': total_matieres 
+
+    })
+
+
+def affecter_notes(request):
+    if request.method == 'POST':
+        for key, value in request.POST.items():
+            if key.startswith('note_'):
+                _, note_id = key.split('_')
+                note = Note.objects.get(id=note_id)
+                note.note = value
+                note.save()
+        messages.success(request, 'Notes mises à jour avec succès.')
+        return redirect('/show_notes')
+    return render(request, 'index_notes.html')
+
+
+
+def create_notes(request):
+    form = NoteForm()
+
+    if request.method == "POST":
+        form = NoteForm(request.POST)
+
+        if form.is_valid():
+            try:
+                form.save()
+                messages.success(request, "created successfuly!")
+                return redirect('/show_notes')
+            except:
+                message = "something is wromg!"
+                form = NoteForm()
+            return render(request, 'notes.html',{'message':message,'form':form})
+    else:
+        form = NoteForm()
+    return render(request, 'notes.html',{'form':form})
+
+
+@login_required
+def add_notes(request):
+    notes = Note.objects.order_by('-id')
+    user = request.user
+    classes = []  # Initialisation de la variable classes avec une liste vide
+
+
+    user = request.user
+
+    if hasattr(user, 'enseignant'):
+        enseignant = user.enseignant
+        enseignements = Enseignement.objects.filter(enseignant=enseignant)
+        classes = [enseignement.classe for enseignement in enseignements]
+        print(classes)
+    
+    form = NoteForm()
+
+    return render(request, 'index_notes.html', {
+        'notes': notes,
+        'form': form,
+        'classes': classes
+    })
+    
+    
+
+@login_required
+def show_notes(request):
+    notes = Note.objects.order_by('-id')
+    user = request.user
+    classes = []  # Initialisation de la variable classes avec une liste vide
+
+
+    user = request.user
+
+    if hasattr(user, 'enseignant'):
+        enseignant = user.enseignant
+        enseignements = Enseignement.objects.filter(enseignant=enseignant)
+        classes = [enseignement.classe for enseignement in enseignements]
+        print(classes)
+    
+    form = NoteForm()
+
+    return render(request, 'index_notes.html', {
+        'notes': notes,
+        'form': form,
+        'classes': classes
+    })
+ 
+
+def save_notes(request):
+    if request.method == 'POST':
+        user = request.user
+        # Récupération des données communes à toutes les notes
+        classe_id = request.POST.get('classe_id')
+        sequence = request.POST.get('sequence')
+        evaluation = request.POST.get('evaluation')
+        date = request.POST.get('date')
+        matiere_id = request.POST.get('matiere_id')
+
+        # Récupérer les informations de la matière à partir de l'identifiant
+
+        
+        if hasattr(user, 'enseignant'):
+            enseignant = user.enseignant
+            enseignements = Enseignement.objects.filter(enseignant=enseignant)
+        
+            print(f"Eleve ID: {classe_id}")
+            print(f"Eleve sequence: {sequence}")
+            print(f"Eleve evaluation: {evaluation}")
+            print(f"Eleve date: {date}")
+            print(f"ID de la matière: {matiere_id}")
+            print(f"Enseignant ID: {enseignant.id}")
+            print(f"Enseignements de l'enseignant: {enseignements}")
+
+            for key, value in request.POST.items():
+                if key.startswith('note_'):
+                    eleve_id = key.split('_')[1]
+                    note_value = value
+
+                    print(f"Eleve ID: {eleve_id}")
+                    print(f"Note Value: {note_value}")
+
+
+
+
+
+
+
+    else:
+        return HttpResponse("Méthode non autorisée", status=405)
+
+
+def get_matiere_for_classe(request, classe_id):
+    enseignement = Enseignement.objects.filter(classe_id=classe_id).first()
+    if enseignement:
+        return JsonResponse({'nom': enseignement.matiere.libelle, 'id': enseignement.matiere.id})
+    else:
+        return JsonResponse({'nom': 'Aucune matière trouvée'}, status=404)
+
+
+def get_coeficient_for_classe(request, classe_id):
+    try:
+        enseignements = Enseignement.objects.filter(classe_id=classe_id)
+        if not enseignements:
+            return JsonResponse({'error': 'Aucun enseignement trouvé pour cette classe'}, status=404)
+        
+        # Exemple: retourner le premier coefficient trouvé pour simplifier
+        coefficient = enseignements.first().coeficient
+        return JsonResponse({'coefficient': coefficient})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+"""
+def get_coeficient_for_classe(request, classe_id):
+    try:
+        enseignement = Enseignement.objects.get(id=classe_id)
+        coefficient = enseignement.coefficient  # Assurez-vous que l'attribut existe
+        return JsonResponse({'coefficient': coefficient})
+    except Classe.DoesNotExist:
+        return JsonResponse({'error': 'Classe non trouvée'}, status=404)    
+"""
+
+def filtrer_eleves(request, id):
+    eleves = Eleve.objects.filter(classe_id=id)
+    data = [{'id': eleve.id, 'matricule': eleve.matricule, 'nom': eleve.nom, 'prenom': eleve.prenom} for eleve in eleves]
+    print (data)
+    #return render(request, 'index_notes.html', {'eleves': eleves, 'classes': classes})
+    return JsonResponse(data, safe=False)
+
+
+def affecter(request, id):
+    enseignant = get_object_or_404(Professeur, id=id)
+    enseignements = Enseignement.objects.filter(enseignant=enseignant)  # Récupérer tous les enseignements pour cet enseignant
+    form = EnseignementForm()
+
+    return render(request, 'affecter.html', {
+        'enseignant': enseignant,
+        'enseignements': enseignements,  # Passer la liste des enseignements
+        'form': form
     })

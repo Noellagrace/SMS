@@ -1,0 +1,25 @@
+{% extends 'link.html' %}
+{% load static %}
+{% block content %}
+
+
+
+
+    <div class="container">
+    <form method="POST" class="post_form" action="/create_Enseignement" >    
+    {% csrf_token %}
+    <h3>Affecter une classe et une matiere</h3>
+   
+    <div class="mb-3">
+      
+        {{form.as_p}}  
+    </div>
+    
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary mb-3">Enregistrer</button>
+    </div>
+
+</form>
+</div>
+
+{% endblock %}

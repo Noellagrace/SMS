@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.auth.models import User
+from SMS import settings
 from gestion_notes.models import *
 
 # Create your models here.
@@ -13,12 +15,9 @@ class Classe(models.Model):
 
 
 class Matiere (models.Model):
-    classe = models.ForeignKey('gestion_utilisateur.classe', on_delete = models.CASCADE)
-    code = models.CharField(max_length=5)
+    code = models.CharField(max_length=10)
     libelle = models.CharField(max_length=255)
-    coeficient = models.IntegerField(choices=((1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6)))
-    enseignant = models.ForeignKey('gestion_utilisateur.Enseignant', on_delete = models.CASCADE)
-
+    #coeficient = models.IntegerField(choices=((1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6)))
     def __str__(self):
         return self.libelle
     
@@ -33,18 +32,32 @@ class Semestre(models.Model):
         return self.nom
 
 
-class Evaluation(models.Model):
-    type = models.CharField(max_length = 100)
-    date_debut = models.DateField()
-    date_fin = models.DateField()
-    matiere = models.ForeignKey(Matiere, on_delete = models.CASCADE)
+class Note(models.Model):
+
+    eleve = models.ForeignKey('gestion_utilisateur.Eleve', on_delete=models.CASCADE, related_name='notes')
+    evaluation = models.CharField(max_length=15)
+    note = models.FloatField()
+    note_coeficiee = models.FloatField()
+    classe = models.ForeignKey('gestion_utilisateur.Classe', on_delete=models.CASCADE, related_name='notes')
+    sequence = models.CharField(max_length=50)
+    enseignant = models.ForeignKey('gestion_utilisateur.Professeur', on_delete=models.CASCADE, related_name='notes')
+    matiere = models.ForeignKey(Matiere, on_delete=models.CASCADE, related_name='notes')
+    
+    date = models.DateField()
+
+    @property
+    def note_coeficiee(self):
+        return self.note * self.evaluation.coefficient
 
     def __str__(self):
-        return self.type
+        return f"{self.classe} - {self.matiere} - {self.eleve.nom}- {self.note}  - {self.evaluation} - - {self.sequence} "
 
 
-class Note(models.Model):
-    notes = models.IntegerField()
-    eleve = models.ForeignKey('gestion_utilisateur.Eleve', on_delete = models.CASCADE)
-    matiere = models.ForeignKey(Matiere, on_delete = models.CASCADE)
-    evalution = models.ForeignKey(Evaluation, on_delete = models.CASCADE)
+
+# Optionally, to track changes for traceability
+class NoteHistory(models.Model):
+    note = models.ForeignKey(Note, on_delete=models.CASCADE, related_name='history')
+    modified_at = models.DateTimeField(auto_now=True)
+    modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    previous_value = models.FloatField()
+    new_value = models.FloatField()    

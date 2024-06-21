@@ -1,0 +1,141 @@
+{% extends 'link.html' %}
+{% load static %}
+{% block content %}
+
+
+<h1>Details de  l'enseignant</h1>
+
+<hr/>
+
+  <div>
+   <h3>INFORMATION GENERALES SUR L'ENSEIGNANT</h3>
+   <p>Matricule: {{ enseignant.matricule }}</p>
+   <p>Nom: {{ enseignant.nom }}</p>
+   <p>Prénom: {{ enseignant.prenom }}</p>
+   <p>Adresse mail: {{ enseignant.email}}</p>
+   <p>Telephone: {{ enseignant.telephone }}</p>
+   <p>Adresse: {{ enseignant.adresse }}</p>
+
+  </div>
+
+  <hr/>
+  <button class="openModalButton btn btn-success btn-sm" data-enseignant-id="ID_ENSEIGNANT">Affecter une classe</button>
+  <table class="table mt-3">
+    <thead>
+    
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Matricule</th>
+        <th scope="col">Code de la Classe</th>
+        <th scope="col">Code de la Matiere</th>
+        <th scope="col">coeficient</th>
+        <th scope="col">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for enseignement in enseignements %}
+        <tr>
+            <th scope="row">{{ enseignement.id }}</th>
+            <td>{{ enseignement.enseignant.matricule }} </td>
+            <td>{{ enseignement.classe }}</td>
+            <td>{{ enseignement.matiere }}</td>
+            <td>{{ enseignement.coeficient }}</td>
+            <td>
+                <button class="openModalButton btn btn-success btn-sm" data-id="{{ enseignement.id }}"><i class="bi bi-pencil-fill"></i></button>
+                <button class="openModal btn btn-danger btn-sm" data-id="{{ enseignement.id }}"   data-enseignant-id="{{ enseignant.id }}"><i class="bi bi-trash-fill"></i></button>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5">Aucun enseignement trouvé pour cet enseignant.</td></tr>
+        {% endfor %}
+    </tbody>
+  <div class="modal fade" id="editEnseignantModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Affecter </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" class="post_form" action="/create_Enseignement" id="editEnseignantForm">
+                    {% csrf_token %}
+                    <input type="hidden" name="enseignant_id" value="{{ enseignant.id }}">
+                    <h3>Affecter Classe et Matiere</h3> <br/>
+                    {{ form.as_p }}
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+   <!-- Small Modal -->
+   <div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <form action="" method="post" style="display: inline;">
+          {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold">Confirmez cette action!</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          ETES VOUS SUR DE VOULOIR SUPPRIMER CET ENSEIGNANT?  
+    
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+              <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 1 1 .708.708L8.707 8l2.647 2.646a.5.5 0 1 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 1 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+            </svg>
+            fermer
+          </button>
+          <button type="submit" class="btn btn-success" data-bs-dismiss="modal">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check" viewBox="0 0 16 16">
+              <path d="M13.354 4.646a.5.5 0 0 0-.708 0L6 11.293 3.354 8.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l7-7a.5.5 0 0 0 0-.708z"/>
+            </svg>
+            supprimer
+          </button>
+        </div>
+              
+      </form>
+      </div>
+    </div>
+  </div><!-- End Small Modal-->
+        
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>   
+
+  <script>
+        $(document).ready(function(){
+          $('.openModalButton').click(function(){
+            console.log('clikkkkkkk');
+
+            $('#editEnseignantModal').modal('show');
+
+            // Fetch les données du poste et les affiche dans le formulaire du modal
+          
+              
+          });
+        });
+  </script>
+  <script>
+    //var deleteModal = $(document)
+
+    $(document).ready(function(){
+      $('.openModal').click(function(){
+        var enseignementId = $(this).data('id');
+        var enseignantId = $(this).data('enseignant-id');  // Récupérer l'ID de l'enseignant
+        console.log(enseignantId);
+     
+        $('#deleteModal').modal('show');
+        var form = $('#deleteModal').find('form')
+        console.log(form);
+        form.attr('action', '/delete_enseignement/' + enseignementId  + '/' + enseignantId + '/');
+      })
+    })
+</script>
+
+{% endblock %}

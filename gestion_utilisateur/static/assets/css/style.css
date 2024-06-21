@@ -156,7 +156,7 @@ h6 {
     content: "";
     width: 13px;
     height: 13px;
-    background: #fff;
+    background: #DCE8F2;
     position: absolute;
     top: -7px;
     right: 20px;
@@ -182,13 +182,13 @@ h6 {
 
 /* Light Backgrounds */
 .bg-primary-light {
-  background-color: #cfe2ff;
-  border-color: #cfe2ff;
+  background-color: #DCE8F2;
+  border-color: #DCE8F2;
 }
 
 .bg-secondary-light {
-  background-color: #e2e3e5;
-  border-color: #e2e3e5;
+  background-color: #DCE8F2;
+  border-color: #DCE8F2;
 }
 
 .bg-success-light {
@@ -227,7 +227,7 @@ h6 {
 .card-header,
 .card-footer {
   border-color: #ebeef4;
-  background-color: #fff;
+  background-color: #DCE8F2;
   color: #798eb3;
   padding: 15px;
 }
@@ -372,7 +372,7 @@ h6 {
 .logo span {
   font-size: 26px;
   font-weight: 700;
-  color: #012970;
+  color: #134070;
   font-family: "Nunito", sans-serif;
 }
 
@@ -381,7 +381,7 @@ h6 {
   z-index: 997;
   height: 60px;
   box-shadow: 0px 2px 20px rgba(1, 41, 112, 0.1);
-  background-color: #fff;
+  background-color: #DCE8F2;
   padding-left: 20px;
   /* Toggle Sidebar Button */
   /* Search Bar */
@@ -391,7 +391,7 @@ h6 {
   font-size: 32px;
   padding-left: 10px;
   cursor: pointer;
-  color: #012970;
+  color: #134070;
 }
 
 .header .search-bar {
@@ -407,7 +407,7 @@ h6 {
     right: 0;
     padding: 20px;
     box-shadow: 0px 0px 15px 0px rgba(1, 41, 112, 0.1);
-    background: white;
+    background: #DCE8F2;
     z-index: 9999;
     transition: 0.3s;
     visibility: hidden;
@@ -474,7 +474,7 @@ h6 {
 }
 
 .header-nav .nav-profile {
-  color: #012970;
+  color: #7FB2F0;
 }
 
 .header-nav .nav-profile img {
@@ -610,7 +610,7 @@ h6 {
   scrollbar-width: thin;
   scrollbar-color: #aab7cf transparent;
   box-shadow: 0px 0px 20px rgba(1, 41, 112, 0.1);
-  background-color: #fff;
+  background-color: #7FB2F0;
 }
 
 @media (max-width: 1199px) {
@@ -622,11 +622,11 @@ h6 {
 .sidebar::-webkit-scrollbar {
   width: 5px;
   height: 8px;
-  background-color: #fff;
+  background-color: #E0F8FF;
 }
 
 .sidebar::-webkit-scrollbar-thumb {
-  background-color: #aab7cf;
+  background-color: #E0F8FF;
 }
 
 @media (min-width: 1200px) {
@@ -708,11 +708,11 @@ h6 {
 
 .sidebar-nav .nav-link:hover {
   color: #4154f1;
-  background: #f6f9ff;
+  background: #F5A503;
 }
 
 .sidebar-nav .nav-link:hover i {
-  color: #4154f1;
+  color: #00469E;
 }
 
 .sidebar-nav .nav-link .bi-chevron-down {
@@ -735,7 +735,7 @@ h6 {
   align-items: center;
   font-size: 14px;
   font-weight: 600;
-  color: #012970;
+  color: #ffffff;
   transition: 0.3;
   padding: 10px 0 10px 40px;
   transition: 0.3s;
@@ -750,7 +750,7 @@ h6 {
 
 .sidebar-nav .nav-content a:hover,
 .sidebar-nav .nav-content a.active {
-  color: #4154f1;
+  color: #4b5294;
 }
 
 .sidebar-nav .nav-content a.active i {
@@ -855,7 +855,7 @@ h6 {
   width: 4px;
   top: 0;
   bottom: 0;
-  background-color: #eceefe;
+  background-color: #49518f;
 }
 
 .dashboard .activity .activity-item .activity-badge {
@@ -911,7 +911,7 @@ h6 {
 
 .dashboard .news p {
   font-size: 14px;
-  color: #777777;
+  color: #538093;
   margin-left: 95px;
 }
 
@@ -921,7 +921,7 @@ h6 {
 }
 
 .dashboard .recent-sales .table thead {
-  background: #f6f6fe;
+  background: #6b6ba4;
 }
 
 .dashboard .recent-sales .table thead th {
@@ -942,7 +942,7 @@ h6 {
 }
 
 .dashboard .top-selling .table thead {
-  background: #f6f6fe;
+  background: #7575b8;
 }
 
 .dashboard .top-selling .table thead th {

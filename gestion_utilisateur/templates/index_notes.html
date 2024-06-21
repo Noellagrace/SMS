@@ -1,0 +1,172 @@
+{% extends 'link.html' %} {% load static %} {% block content %}
+
+<div class="alert alert-secondary  show" style="display: inline-block; width:100%" >
+  <h2>Voir les notes</h2>
+  <p>Choisissez la classe, la mtière, la sequence et l'evaluation dans laquelle vous voudriez voir les notes</p>
+ 
+</div>
+<br />
+<br /><!-- End Search Bar -->
+<form action="/notes/filter_notes/" method="post">
+  {% csrf_token %}
+  <div style="display: flex">
+    <select
+      class="form-select"
+      aria-label="select example"
+      name="classe_id"
+      id="classSelect"
+    >
+      <option value="">Choisir une classe</option>
+      {% for classe in classes %}
+      <option value="{{ classe.id }}">{{ classe.code }}</option>
+      {% endfor %}
+    </select>
+    <input type="text" id="matiereInput" name="matiere_nom" disabled />
+    <input type="hidden" id="matiereIdInput" name="matiere_id" />
+    <select class="form-select" name="sequence">
+      <option selected>Selectionnez la sequence</option>
+      <option value="1">1er sequence</option>
+      <option value="2">2eme sequence</option>
+      <option value="3">3eme sequence</option>
+    </select>
+
+    <select class="form-select" name="evaluation">
+      <option selected>Selectionnez l'Evaluation</option>
+      <option value="1">Evaluation harmoniser</option>
+      <option value="2">Evaluation personnaliser</option>
+    </select>
+    <style>
+      .form-select {
+        margin-right: 10px; /* Ajoute un espace de 10px à droite de chaque select */
+      }
+      .form-select:last-child {
+        margin-right: 0; /* Supprime la marge pour le dernier select */
+      }
+      div {
+        display: flex;
+        gap: 10px; /* Ajoute un espace de 10px entre chaque élément enfant */
+      }
+    </style>
+    
+  </div>
+  <button type="submit" class="btn btn-success btn-sm m-1" > Voir les notes</button>        
+</form>
+  <br />
+  <table class="table mt-3">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Nom et Prenom</th>
+            <th scope="col">Note</th>
+            <th scope="col">Coefficient</th>
+            <th scope="col">Note pondérée</th>
+        </tr>
+    </thead>
+    <tbody id="elevesData">
+        {% for note in notes %}
+        <tr>
+            <th scope="row">{{ forloop.counter }}</th>
+            <td>{{ note.eleve.nom }} {{ note.eleve.prenom }}</td>
+            <td>{{ note.note }}</td>
+            <td id="coeficientInput"></td>
+            <td>{{ note.evaluation.coefficient }}</td>
+            
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+ 
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+  function logNoteValue(value, eleveId) {
+    console.log(value);
+  }
+</script>
+
+<script>
+  $(document).ready(function () {
+    $("#classSelect").change(function () {
+      var classeId = $(this).val();
+      if (classeId) {
+        $.ajax({
+          url: "/get_matiere_for_classe/" + classeId, // Assurez-vous que cette URL est correctement configurée dans vos routes Django
+          type: "GET",
+          success: function (matiere) {
+           
+            document.getElementById("matiereInput").value = matiere.nom;
+            document.getElementById("matiereIdInput").value = matiere.id;
+            console.log(matiere);
+          },
+          error: function () {
+            $("#matiereInput").val(
+              "Erreur lors de la récupération de la matière"
+            );
+          },
+        });
+      } else {
+        $("#matiereInput").val("Sélectionnez une classe");
+      }
+    });
+  });
+</script>
+
+<script>
+  $(document).ready(function () {
+    $("#classSelect").change(function () {
+      var classeId = $(this).val();
+      if (classeId) {
+        $.ajax({
+          url: "/get_coeficient_for_classe/" + classeId,
+          type: "GET",
+          success: function (data) {
+            if (data.coefficient) {
+              $("#coeficientInput").val(data.coefficient);
+            } else {
+              $("#coeficientInput").val("Aucun coefficient trouvé");
+            }
+          },
+          error: function () {
+            $("#coeficientInput").val(
+              "Erreur lors de la récupération du coefficient"
+            );
+          },
+        });
+      } else {
+        $("#coeficientInput").val("Sélectionnez une classe");
+      }
+    });
+  });
+</script>
+
+<script>
+  $(document).ready(function () {
+    //stoker les donnees du tableau dans une variable javascript
+    var tableData = [];
+    $("#enseignantTable tbody tr").each(function () {
+      var rowData = [];
+      $(this)
+        .find("td")
+        .each(function () {
+          rowData.push($(this).text());
+        });
+      tableData.push(rowData);
+    });
+
+    //initialisez datatables avec les donnees du tableau
+    $("#enseignantTable").DataTable({
+      data: tableData, // utilisation des donnes stockees
+      paging: true,
+      searching: false, // desactiver la recherche par defaut de datatables
+      info: false, // supprimer l'info sur la recherche
+    });
+
+    // ajouter la fonction de recherche instantanee
+    $("#search-input").on("input", function () {
+      $("#enseignantTable").DataTable().search($(this).val()).draw();
+    });
+  });
+</script>
+
+{% endblock %}
